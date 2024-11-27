@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     String operand1 = ""; // First operand
     String operand2 = ""; // Second operand
     boolean isOperatorClicked = false; // Flag to check if an operator was clicked
+    boolean OperatorBeforeMe = false; // to avoid scenario of 2 opeartors in a row
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (isOperatorClicked) {
                 operand2 += value; // Add to the second operand
+                OperatorBeforeMe = false;
             } else {
                 operand1 += value; // Add to the first operand
             }
@@ -53,18 +55,19 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (value.matches("[+X \\-:]")) { // Check if the button is an operator
 
-            if (!operand1.isEmpty() && !operand2.isEmpty() && !operator.isEmpty()) {
+            if (!operand1.isEmpty() && !operand2.isEmpty() && !operator.isEmpty() && !OperatorBeforeMe) {
 
                 handleMoreThanTwo(value);
                 input += " " + value + " "; // Update the input string with the operator
-
+                OperatorBeforeMe = true;
             }
 
-            else if (!operand1.isEmpty()) { // Only allow an operator if there's a first operand
+            else if (!operand1.isEmpty() && !OperatorBeforeMe) { // Only allow an operator if there's a first operand
 
-                    operator = value;
+                operator = value;
                 isOperatorClicked = true; // Set flag to start capturing the second operand
                 input += " " + value + " "; // Update the input string with the operator
+                OperatorBeforeMe = true;
             }
         }
         else if (value.equals("=")) { // Handle the "=" button
@@ -86,20 +89,20 @@ public class MainActivity extends AppCompatActivity {
                         input += " = " + result; // Update the input string with the result
                         textView.setText(String.valueOf(result)); // Display the result
                     }}
-                    input = "";
-                    operator = "";
-                    operand1 = "";
-                    operand2 = "";
+                input = "";
+                operator = "";
+                operand1 = "";
+                operand2 = "";
 
-              // resetCalculator(); // Reset for next calculation
-               return; // Exit early to avoid updating TextView again
+                // resetCalculator(); // Reset for next calculation
+                return; // Exit early to avoid updating TextView again
             }
         } else if (value.equals("C")) { // Handle the "C" (clear) button
             resetCalculator();
         }
 
         // Update the TextView
-       textView.setText(input);
+        textView.setText(input);
     }
 
     // Helper method to perform calculations
